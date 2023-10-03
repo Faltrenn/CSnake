@@ -83,9 +83,9 @@ int main() {
 
     Vector2 apple = generate_apple();
 
+    int playing = 1;
 
-
-    while(1) {
+    while(playing) {
         wclear(game_window);
 
         for(SnakeBody *s = snake; s != NULL; s = s->next) {
@@ -109,6 +109,11 @@ int main() {
             wclear(left_window);
             mvwprintw(left_window, 0, 0, "Score: %d", score);
             wrefresh(left_window);
+        }
+
+        for(SnakeBody *s = snake; s->next != NULL; s = s->next) {
+            if(s->position.x == head_position.x && s->position.y == head_position.y && score > 1)
+                playing = false;
         }
 
         mvwprintw(game_window, apple.y, apple.x, "A");
