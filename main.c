@@ -2,10 +2,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define INFO_WIDTH 10
-#define INFO_HEIGHT LINES
-#define GAME_WIDTH (COLS - INFO_WIDTH)
-#define GAME_HEIGHT LINES
+#define INFO_WIDTH COLS
+#define INFO_HEIGHT 1
+#define GAME_WIDTH COLS
+#define GAME_HEIGHT (LINES - INFO_HEIGHT)
+#define INFO_POSX 0
+#define INFO_POSY 0
+#define GAME_POSX 0
+#define GAME_POSY INFO_HEIGHT
+
 
 typedef struct {
     unsigned int x;
@@ -51,6 +56,12 @@ Vector2 generate_apple() {
     return apple;
 }
 
+void show_score(WINDOW *w, unsigned int score) {
+    wclear(w);
+    mvwprintw(w, 0, INFO_WIDTH/2 - 5, "Score: %d", score);
+    wrefresh(w);
+}
+
 int main() {
     initscr();
     cbreak();
@@ -69,17 +80,15 @@ int main() {
 
     SnakeBody *snake = create_snake_body(position, move_direction, NULL);
 
-    WINDOW *left_window = newwin(INFO_HEIGHT, INFO_WIDTH, 0, 0);
-    WINDOW *game_window = newwin(GAME_HEIGHT, GAME_WIDTH, 0, INFO_WIDTH);
+    WINDOW *score_window = newwin(INFO_HEIGHT, INFO_WIDTH, INFO_POSY, INFO_POSX);
+    WINDOW *game_window = newwin(GAME_HEIGHT, GAME_WIDTH, GAME_POSY, GAME_POSX);
 
-    int score = 0;
+    unsigned int score = 0;
 
     
     refresh();
 
-    wclear(left_window);
-    mvwprintw(left_window, 0, 0, "Score: %d", score);
-    wrefresh(left_window);
+    show_score(score_window, score);
 
     Vector2 apple = generate_apple();
 
@@ -106,9 +115,7 @@ int main() {
             snake = create_snake_body(snake->position, move_direction, snake);
             
             score++;
-            wclear(left_window);
-            mvwprintw(left_window, 0, 0, "Score: %d", score);
-            wrefresh(left_window);
+            show_score(score_window, score);
         }
 
         for(SnakeBody *s = snake; s->next != NULL; s = s->next) {
