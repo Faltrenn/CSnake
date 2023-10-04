@@ -84,7 +84,6 @@ int main() {
     WINDOW *game_window = newwin(GAME_HEIGHT, GAME_WIDTH, GAME_POSY, GAME_POSX);
 
     unsigned int score = 0;
-
     
     refresh();
 
@@ -118,9 +117,13 @@ int main() {
             show_score(score_window, score);
         }
 
-        for(SnakeBody *s = snake; s->next != NULL; s = s->next) {
-            if(s->position.x == head_position.x && s->position.y == head_position.y && score > 1)
-                playing = false;
+        if(head_position.x < 0 || head_position.x > GAME_WIDTH-1 || head_position.y < 0 || head_position.y > GAME_HEIGHT-1) {
+            playing = false;
+        } else {
+            for(SnakeBody *s = snake; s->next != NULL; s = s->next) {
+                if(s->position.x == head_position.x && s->position.y == head_position.y && score > 1)
+                    playing = false;
+            }
         }
 
         mvwprintw(game_window, apple.y, apple.x, "A");
